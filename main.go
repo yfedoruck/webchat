@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"html/template"
@@ -42,17 +40,9 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		t.templ = template.Must(template.ParseFiles(filepath.Join(basePath()+"/templates", t.filename)))
 	})
 	data := map[string]interface{}{"Host": r.Host}
-	// data := tplData{Host: r.Host}
 	if authCookie, err := r.Cookie("auth"); err == nil {
-		user := user{}
-		// err = json.Unmarshal([]byte(`{"Id":"1832567780145643","Name":"Yaroslav Fedoruk"}`), &user)
-		res, err := base64.StdEncoding.DecodeString(authCookie.Value)
-		fmt.Printf("%s", res)
-		check(err)
-
-		err = json.Unmarshal(res, &user)
-		check(err)
-		fmt.Println(user)
+		user := cookie{}
+		user.decode(authCookie.Value)
 
 		// dec := json.NewDecoder(strings.NewReader(authCookie.Value))
 		// err := dec.Decode(&user)
@@ -64,6 +54,19 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := t.templ.Execute(w, data)
 	check(err)
+}
+
+func logout() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "auth",
+			Value:  "",
+			Path:   "/",
+			MaxAge: -1,
+		})
+		w.Header().Set("Location", "/chat")
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	})
 }
 
 func main() {
@@ -78,6 +81,7 @@ func main() {
 
 	http.HandleFunc("/signin", handleMain)
 	http.HandleFunc("/login", handleFacebookLogin)
+	http.Handle("/logout", logout())
 	http.HandleFunc("/oauth2callback", handleFacebookCallback)
 
 	// start the web server

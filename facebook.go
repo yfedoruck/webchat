@@ -26,8 +26,39 @@ var (
 )
 
 type user struct {
-	Id   string `json:"Id"`
-	Name string `json:"Name"`
+	Id        string `json:"Id"`
+	Name      string `json:"Name"`
+	AvatarURL string `json:"Url"`
+}
+
+type fbUser struct {
+	Id      string `json:"id"`
+	Name    string `json:"name"`
+	Picture struct {
+		Data struct {
+			Url string `json:"url"`
+		} `json:"data"`
+	} `json:"picture"`
+}
+
+type cookie struct {
+	Name      string
+	AvatarURL string
+}
+
+func (c cookie) encode() string {
+	js, err := json.Marshal(c)
+	check(err)
+
+	return base64.StdEncoding.EncodeToString(js)
+}
+
+func (c *cookie) decode(arg string) {
+	js, err := base64.StdEncoding.DecodeString(arg)
+	check(err)
+
+	err = json.Unmarshal(js, &c)
+	check(err)
 }
 
 const htmlIndex = `<html><body>
@@ -88,7 +119,7 @@ func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := http.Get("https://graph.facebook.com/me?access_token=" + url.QueryEscape(token.AccessToken))
+	resp, err := http.Get("https://graph.facebook.com/me?access_token=" + url.QueryEscape(token.AccessToken) + "&fields=id,name,picture{url}")
 	if err != nil {
 		fmt.Printf("Get: %s\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
@@ -103,18 +134,22 @@ func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// user := getUser(response)
-	// authCookie, err := json.Marshal(user)
-	authCookie := base64.StdEncoding.EncodeToString(response)
+	fbUser := fbUser{}
+	_ = json.Unmarshal(response, &fbUser)
+
+	cookie := cookie{
+		fbUser.Name,
+		fbUser.Picture.Data.Url,
+	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:  "auth",
-		Value: authCookie,
+		Value: cookie.encode(),
 		Path:  "/",
 	})
 
 	log.Printf("parseResponseBody: %s\n", string(response))
-	res := fmt.Sprintf("%s", response)
-	fmt.Println(res)
+	// res := fmt.Sprintf("%s", response)
 
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusTemporaryRedirect)

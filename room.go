@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
@@ -54,13 +52,12 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	res, err := base64.StdEncoding.DecodeString(authCookie.Value)
-	check(err)
-	user := user{}
-	err = json.Unmarshal(res, &user)
-	check(err)
+	user := cookie{}
+	user.decode(authCookie.Value)
+
 	m := make(map[string]interface{})
 	m["name"] = user.Name
+	m["avatar_url"] = user.AvatarURL
 
 	client := &client{
 		socket:   socket,
