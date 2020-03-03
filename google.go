@@ -10,13 +10,15 @@ import (
 )
 
 var (
-	googleOauthConfig *oauth2.Config
+	googleConf *oauth2.Config
+	// TODO: randomize it
+	googleState = "pseudo-random"
 )
 
 func init() {
 	c := config{}
 	c.set("google")
-	googleOauthConfig = &oauth2.Config{
+	googleConf = &oauth2.Config{
 		RedirectURL:  c.RedirectURL,
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
@@ -34,13 +36,8 @@ type googleUser struct {
 	Locale     string `json:"locale"`
 }
 
-var (
-	// TODO: randomize it
-	oauthStateStringGoogle = "pseudo-random"
-)
-
 func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
-	url := googleOauthConfig.AuthCodeURL(oauthStateStringGoogle)
+	url := googleConf.AuthCodeURL(googleState)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
@@ -65,10 +62,10 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 func getUserInfo(state string, code string) ([]byte, error) {
-	if state != oauthStateStringGoogle {
+	if state != googleState {
 		return nil, fmt.Errorf("invalid oauth state")
 	}
-	token, err := googleOauthConfig.Exchange(oauth2.NoContext, code)
+	token, err := googleConf.Exchange(oauth2.NoContext, code)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange failed: %s", err.Error())
 	}

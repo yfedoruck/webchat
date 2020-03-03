@@ -14,14 +14,14 @@ import (
 )
 
 var (
-	oauthConf        *oauth2.Config
-	oauthStateString = "thisshouldberandom"
+	fbConf  *oauth2.Config
+	fbState = "thisshouldberandom"
 )
 
 func init() {
 	c := config{}
 	c.set("facebook")
-	oauthConf = &oauth2.Config{
+	fbConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
 		RedirectURL:  c.RedirectURL,
@@ -41,34 +41,34 @@ type fbUser struct {
 }
 
 func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {
-	Url, err := url.Parse(oauthConf.Endpoint.AuthURL)
+	Url, err := url.Parse(fbConf.Endpoint.AuthURL)
 	if err != nil {
 		log.Fatal("Parse: ", err)
 	}
 	parameters := url.Values{}
-	parameters.Add("client_id", oauthConf.ClientID)
-	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
-	parameters.Add("redirect_uri", oauthConf.RedirectURL)
+	parameters.Add("client_id", fbConf.ClientID)
+	parameters.Add("scope", strings.Join(fbConf.Scopes, " "))
+	parameters.Add("redirect_uri", fbConf.RedirectURL)
 	parameters.Add("response_type", "code")
-	parameters.Add("state", oauthStateString)
+	parameters.Add("state", fbState)
 	Url.RawQuery = parameters.Encode()
-	authUrl := oauthConf.AuthCodeURL(oauthStateString)
+	authUrl := fbConf.AuthCodeURL(fbState)
 	http.Redirect(w, r, authUrl, http.StatusTemporaryRedirect)
 }
 
 func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
-	if state != oauthStateString {
-		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
+	if state != fbState {
+		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", fbState, state)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	code := r.FormValue("code")
 
-	token, err := oauthConf.Exchange(oauth2.NoContext, code)
+	token, err := fbConf.Exchange(oauth2.NoContext, code)
 	if err != nil {
-		fmt.Printf("oauthConf.Exchange() failed with '%s'\n", err)
+		fmt.Printf("fbConf.Exchange() failed with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
