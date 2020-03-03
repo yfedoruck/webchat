@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,20 +14,20 @@ import (
 )
 
 var (
-	oauthConf = &oauth2.Config{
-		ClientID:     "245616582805552",
-		ClientSecret: "b6568aba9223f933ba52bcbf77aa773d",
-		RedirectURL:  "https://localhost:8080/oauth2callback",
-		Scopes:       []string{"public_profile"},
-		Endpoint:     facebook.Endpoint,
-	}
+	oauthConf        *oauth2.Config
 	oauthStateString = "thisshouldberandom"
 )
 
-type user struct {
-	Id        string `json:"Id"`
-	Name      string `json:"Name"`
-	AvatarURL string `json:"Url"`
+func init() {
+	c := config{}
+	c.set("facebook")
+	oauthConf = &oauth2.Config{
+		ClientID:     c.ClientID,
+		ClientSecret: c.ClientSecret,
+		RedirectURL:  c.RedirectURL,
+		Scopes:       []string{"public_profile"},
+		Endpoint:     facebook.Endpoint,
+	}
 }
 
 type fbUser struct {
@@ -39,50 +38,6 @@ type fbUser struct {
 			Url string `json:"url"`
 		} `json:"data"`
 	} `json:"picture"`
-}
-
-type cookie struct {
-	Name      string
-	AvatarURL string
-}
-
-func (c cookie) encode() string {
-	js, err := json.Marshal(c)
-	check(err)
-
-	return base64.StdEncoding.EncodeToString(js)
-}
-
-func (c *cookie) decode(arg string) {
-	js, err := base64.StdEncoding.DecodeString(arg)
-	check(err)
-
-	err = json.Unmarshal(js, &c)
-	check(err)
-}
-
-const htmlIndex = `<html><body>
-Logged in with <a href="/login">facebook</a>
-</body></html>
-`
-
-func getUser(byt []byte) user {
-	// dat := make(map[string]interface{})
-	user := user{}
-
-	if err := json.Unmarshal(byt, &user); err != nil {
-		log.Panic(err)
-	}
-
-	fmt.Println(user.Id, user.Name)
-
-	return user
-}
-
-func handleMain(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(htmlIndex))
 }
 
 func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {
@@ -97,7 +52,6 @@ func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {
 	parameters.Add("response_type", "code")
 	parameters.Add("state", oauthStateString)
 	Url.RawQuery = parameters.Encode()
-	// url := Url.String()
 	authUrl := oauthConf.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, authUrl, http.StatusTemporaryRedirect)
 }
@@ -137,29 +91,15 @@ func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 	fbUser := fbUser{}
 	_ = json.Unmarshal(response, &fbUser)
 
-	cookie := cookie{
+	cookie{
 		fbUser.Name,
 		fbUser.Picture.Data.Url,
-	}
+	}.set(w)
 
-	http.SetCookie(w, &http.Cookie{
-		Name:  "auth",
-		Value: cookie.encode(),
-		Path:  "/",
-	})
-
-	log.Printf("parseResponseBody: %s\n", string(response))
+	// log.Printf("parseResponseBody: %s\n", string(response))
 	// res := fmt.Sprintf("%s", response)
 
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusTemporaryRedirect)
 	// http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-}
-
-func main2() {
-	// http.HandleFunc("/", handleMain)
-	// http.HandleFunc("/login", handleFacebookLogin)
-	// http.HandleFunc("/oauth2callback", handleFacebookCallback)
-	// fmt.Print("Started running on http://localhost:9090\n")
-	// log.Fatal(http.ListenAndServe(":9090", nil))
 }

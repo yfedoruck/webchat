@@ -7,32 +7,13 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
-	"runtime"
 	"sync"
 )
-
-func basePath() string {
-	_, b, _, ok := runtime.Caller(0)
-	if !ok {
-		log.Panic("Caller error")
-	}
-	return filepath.Dir(b)
-}
-func check(err error) {
-	if err != nil {
-		log.Panic(err)
-	}
-}
 
 type templateHandler struct {
 	once     sync.Once
 	filename string
 	templ    *template.Template
-}
-
-type tplData struct {
-	user
-	Host string
 }
 
 func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -44,13 +25,10 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		user := cookie{}
 		user.decode(authCookie.Value)
 
-		// dec := json.NewDecoder(strings.NewReader(authCookie.Value))
-		// err := dec.Decode(&user)
 		data["UserData"] = user
 		// data.user = user
 		fmt.Println(data)
 	}
-	// fmt.Println(data)
 
 	err := t.templ.Execute(w, data)
 	check(err)
@@ -58,13 +36,8 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func logout() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.SetCookie(w, &http.Cookie{
-			Name:   "auth",
-			Value:  "",
-			Path:   "/",
-			MaxAge: -1,
-		})
-		w.Header().Set("Location", "/chat")
+		removeCookie(w)
+		w.Header().Set("Location", "/signin")
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
 }
@@ -75,21 +48,23 @@ func main() {
 	r := newRoom()
 
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
-	// http.HandleFunc("/", handleMain)
 	go r.run()
 	http.Handle("/room", r)
 
-	http.HandleFunc("/signin", handleMain)
-	http.HandleFunc("/login", handleFacebookLogin)
-	http.Handle("/logout", logout())
+	http.Handle("/signin", &templateHandler{filename: "login.html"})
+
+	http.HandleFunc("/auth/login/facebook", handleFacebookLogin)
 	http.HandleFunc("/oauth2callback", handleFacebookCallback)
+
+	http.HandleFunc("/auth/login/google", handleGoogleLogin)
+	http.HandleFunc("/callback", handleGoogleCallback)
+
+	http.Handle("/logout", logout())
 
 	// start the web server
 	log.Println("Starting web server on", *addr)
+	// if err := http.ListenAndServe(*addr, nil); err != nil {
 	if err := http.ListenAndServeTLS(*addr, filepath.Join(basePath()+"/server.rsa.crt"), filepath.Join(basePath()+"/server.rsa.key"), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
-	// if err := http.ListenAndServe(*addr, nil); err != nil {
-	// 	log.Fatal("ListenAndServe:", err)
-	// }
 }
