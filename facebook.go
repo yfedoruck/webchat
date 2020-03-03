@@ -68,7 +68,7 @@ func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 
 	token, err := fbConf.Exchange(oauth2.NoContext, code)
 	if err != nil {
-		fmt.Printf("fbConf.Exchange() failed with '%s'\n", err)
+		fmt.Printf("Exchange() failed with '%s'\n", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
@@ -95,9 +95,6 @@ func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 		fbUser.Name,
 		fbUser.Picture.Data.Url,
 	}.set(w)
-
-	// log.Printf("parseResponseBody: %s\n", string(response))
-	// res := fmt.Sprintf("%s", response)
 
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusTemporaryRedirect)
