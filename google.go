@@ -19,9 +19,9 @@ func init() {
 	c := config{}
 	c.set("google")
 	googleConf = &oauth2.Config{
-		RedirectURL:  c.RedirectURL,
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
+		RedirectURL:  "https://localhost:8080/callback",
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}

@@ -9,15 +9,12 @@ import (
 type config struct {
 	ClientID     string `json:"ClientID"`
 	ClientSecret string `json:"ClientSecret"`
-	RedirectURL  string `json:"RedirectURL"`
 }
 
 func (c *config) set(service string) {
 	file, err := os.Open(basePath() + filepath.FromSlash("/config/"+service+".json"))
 	check(err)
 
-	decoder := json.NewDecoder(file)
-
-	err = decoder.Decode(c)
+	err = json.NewDecoder(file).Decode(c)
 	check(err)
 }

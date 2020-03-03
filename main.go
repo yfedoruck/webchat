@@ -44,9 +44,9 @@ func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application")
 	flag.Parse()
 	r := newRoom()
+	go r.run()
 
 	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
-	go r.run()
 	http.Handle("/room", r)
 
 	http.Handle("/signin", &templateHandler{filename: "login.html"})

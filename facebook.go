@@ -24,7 +24,7 @@ func init() {
 	fbConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  c.RedirectURL,
+		RedirectURL:  "https://localhost:8080/oauth2callback",
 		Scopes:       []string{"public_profile"},
 		Endpoint:     facebook.Endpoint,
 	}
