@@ -13,9 +13,11 @@ import (
 	"golang.org/x/oauth2/facebook"
 )
 
+const fbCallback string = "/oauth2callback"
+
 var (
 	fbConf  *oauth2.Config
-	fbState = "thisshouldberandom"
+	fbState = "this_should_be_random"
 )
 
 func init() {
@@ -24,7 +26,7 @@ func init() {
 	fbConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  "https://localhost:8080/oauth2callback",
+		RedirectURL:  "https://" + addr + fbCallback,
 		Scopes:       []string{"public_profile"},
 		Endpoint:     facebook.Endpoint,
 	}

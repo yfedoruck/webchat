@@ -9,10 +9,11 @@ import (
 	"net/http"
 )
 
+const googleCallback string = "/callback"
+
 var (
-	googleConf *oauth2.Config
-	// TODO: randomize it
-	googleState = "pseudo-random"
+	googleConf  *oauth2.Config
+	googleState = "pseudorandom"
 )
 
 func init() {
@@ -21,7 +22,7 @@ func init() {
 	googleConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  "https://localhost:8080/callback",
+		RedirectURL:  "https://" + addr + googleCallback,
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}

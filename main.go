@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"html/template"
 	"log"
 	"net/http"
@@ -41,8 +40,6 @@ func logout() http.Handler {
 }
 
 func main() {
-	var addr = flag.String("addr", ":8080", "The addr of the application")
-	flag.Parse()
 	r := newRoom()
 	go r.run()
 
@@ -52,17 +49,17 @@ func main() {
 	http.Handle("/signin", &templateHandler{filename: "login.html"})
 
 	http.HandleFunc("/auth/login/facebook", handleFacebookLogin)
-	http.HandleFunc("/oauth2callback", handleFacebookCallback)
+	http.HandleFunc(fbCallback, handleFacebookCallback)
 
 	http.HandleFunc("/auth/login/google", handleGoogleLogin)
-	http.HandleFunc("/callback", handleGoogleCallback)
+	http.HandleFunc(googleCallback, handleGoogleCallback)
 
 	http.Handle("/logout", logout())
 
 	// start the web server
-	log.Println("Starting web server on", *addr)
+	log.Println("Starting web server on", addr)
 	// if err := http.ListenAndServe(*addr, nil); err != nil {
-	if err := http.ListenAndServeTLS(*addr, filepath.Join(basePath()+"/server.rsa.crt"), filepath.Join(basePath()+"/server.rsa.key"), nil); err != nil {
+	if err := http.ListenAndServeTLS(addr, filepath.Join(basePath()+"/server.rsa.crt"), filepath.Join(basePath()+"/server.rsa.key"), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }
