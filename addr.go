@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 var addr addrConf
@@ -25,4 +27,19 @@ func host() string {
 
 	addr.Host = a.Host
 	return addr.Host
+}
+
+var baseDir string
+
+func basePath() string {
+	if baseDir != "" {
+		return baseDir
+	}
+	_, b, _, ok := runtime.Caller(0)
+	if !ok {
+		log.Panic("Caller error")
+	}
+
+	baseDir = filepath.Dir(b)
+	return baseDir
 }
