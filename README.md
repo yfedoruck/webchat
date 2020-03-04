@@ -5,4 +5,16 @@ Files with credentials
 `config/facebook.json`  
 `config/google.json`
 
-as in template `config/servicename.json` 
+in the form of json: 
+```
+{
+  "ClientID": "",
+  "ClientSecret": ""
+}
+``` 
+`config/addr.json` :
+```
+{
+  "Host": "localhost:8080"
+}
+```
