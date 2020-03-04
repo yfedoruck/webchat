@@ -14,7 +14,7 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 config/*
-!config/servicename.json
+!config/.gitkeep
 
 server.rsa.crt
 server.rsa.key
