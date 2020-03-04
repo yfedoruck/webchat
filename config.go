@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 )
 
-const addr string = "localhost:8080"
-
 type config struct {
 	ClientID     string `json:"ClientID"`
 	ClientSecret string `json:"ClientSecret"`
