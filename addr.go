@@ -1,24 +1,25 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 )
 
-var port string
+var portAddr string
 
-func host() string {
-	if port == "" {
-		port = os.Getenv("PORT")
-		if port == "" {
-			port = ":5000"
+func port() string {
+	if portAddr == "" {
+		portAddr = os.Getenv("PORT")
+		if portAddr == "" {
+			portAddr = ":5000"
 		}
 		// httpAddr = flag.String("addr", ":8080", "Listen address")
 		// flag.Parse()
 	}
-	return port
+	return portAddr
 }
 
 var baseDir string
@@ -34,4 +35,25 @@ func basePath() string {
 
 	baseDir = filepath.Dir(b)
 	return baseDir
+}
+
+var addr addrConf
+
+type addrConf struct {
+	Host string `json:"Host"`
+}
+
+func host() string {
+	if addr.Host != "" {
+		return addr.Host
+	}
+	file, err := os.Open(basePath() + filepath.FromSlash("/config/addr.json"))
+	check(err)
+
+	a := addrConf{}
+	err = json.NewDecoder(file).Decode(&a)
+	check(err)
+
+	addr.Host = a.Host
+	return addr.Host
 }

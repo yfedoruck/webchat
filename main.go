@@ -40,6 +40,10 @@ func logout() http.Handler {
 }
 
 func main() {
+	// f, _ := os.Create("/var/log/golang/golang-server.log")
+	// defer f.Close()
+	// log.SetOutput(f)
+
 	r := newRoom()
 	go r.run()
 
@@ -57,9 +61,9 @@ func main() {
 	http.Handle("/logout", logout())
 
 	// start the web server
-	log.Println("Starting web server on", host())
-	// if err := http.ListenAndServe(*addr, nil); err != nil {
-	if err := http.ListenAndServeTLS(host(), filepath.Join(basePath()+"/server.rsa.crt"), filepath.Join(basePath()+"/server.rsa.key"), nil); err != nil {
+	log.Println("Starting web server on", port())
+	if err := http.ListenAndServe(port(), nil); err != nil {
+		// if err := http.ListenAndServeTLS(host(), filepath.Join(basePath()+"/server.rsa.crt"), filepath.Join(basePath()+"/server.rsa.key"), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }

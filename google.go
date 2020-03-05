@@ -22,7 +22,7 @@ func init() {
 	googleConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  "https://" + host() + googleCallback,
+		RedirectURL:  "http://" + host() + googleCallback,
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}
