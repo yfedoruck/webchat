@@ -1,32 +1,24 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 )
 
-var addr addrConf
-
-type addrConf struct {
-	Host string `json:"Host"`
-}
+var port string
 
 func host() string {
-	if addr.Host != "" {
-		return addr.Host
+	if port == "" {
+		port = os.Getenv("PORT")
+		if port == "" {
+			port = ":5000"
+		}
+		// httpAddr = flag.String("addr", ":8080", "Listen address")
+		// flag.Parse()
 	}
-	file, err := os.Open(basePath() + filepath.FromSlash("/config/addr.json"))
-	check(err)
-
-	a := addrConf{}
-	err = json.NewDecoder(file).Decode(&a)
-	check(err)
-
-	addr.Host = a.Host
-	return addr.Host
+	return port
 }
 
 var baseDir string
