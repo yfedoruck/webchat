@@ -12,6 +12,8 @@ RUN go get -u github.com/gorilla/websocket
 RUN go get -u golang.org/x/oauth2
 RUN go get -u golang.org/x/oauth2/facebook
 RUN go get -u golang.org/x/oauth2/google
+RUN go get -u golang.org/x/oauth2/github
+RUN go get -u github.com/google/go-github/github
 
 RUN go install github.com/yfedoruck/webchat
 

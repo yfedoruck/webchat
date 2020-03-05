@@ -15,6 +15,6 @@ in the form of json:
 `config/addr.json` :
 ```
 {
-  "Host": "localhost:8080"
+  "Host": "webchat.us-east-2.elasticbeanstalk.com"
 }
 ```

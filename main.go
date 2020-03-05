@@ -52,11 +52,17 @@ func main() {
 
 	http.Handle("/signin", &templateHandler{filename: "login.html"})
 
+	// facebook
 	http.HandleFunc("/auth/login/facebook", handleFacebookLogin)
 	http.HandleFunc(fbCallback, handleFacebookCallback)
 
+	// google
 	http.HandleFunc("/auth/login/google", handleGoogleLogin)
 	http.HandleFunc(googleCallback, handleGoogleCallback)
+
+	// github
+	http.HandleFunc("/auth/login/github", handleGitHubLogin)
+	http.HandleFunc(githubCallback, handleGitHubCallback)
 
 	http.Handle("/logout", logout())
 
