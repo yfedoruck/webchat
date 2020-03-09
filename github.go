@@ -23,7 +23,7 @@ func init() {
 	oauthConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  "http://" + host() + githubCallback,
+		RedirectURL:  "https://" + host() + githubCallback,
 		Scopes:       []string{"user:username,avatar_url"},
 		Endpoint:     githuboauth.Endpoint,
 	}

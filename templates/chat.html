@@ -65,7 +65,7 @@
         if (!window["WebSocket"]) {
             alert("Error: Your browser does not support web  sockets.")
         } else {
-            socket = new WebSocket("ws://{{.Host}}/room");
+            socket = new WebSocket("wss://{{.Host}}/room");
             socket.onopen = function () {
                 console.log("websocket open.");
             };

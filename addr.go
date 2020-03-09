@@ -8,18 +8,12 @@ import (
 	"runtime"
 )
 
-var portAddr string
-
 func port() string {
-	if portAddr == "" {
-		portAddr = os.Getenv("PORT")
-		if portAddr == "" {
-			portAddr = ":5000"
-		}
-		// httpAddr = flag.String("addr", ":8080", "Listen address")
-		// flag.Parse()
+	p := os.Getenv("PORT")
+	if p == "" {
+		p = "5000"
 	}
-	return portAddr
+	return p
 }
 
 var baseDir string
