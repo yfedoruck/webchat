@@ -1,0 +1,7 @@
+version: "3"
+services:
+  webchat:
+    environment:
+      - DEBUG=True
+    ports:
+      - "8080:5000"
