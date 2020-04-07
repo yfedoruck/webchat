@@ -24,6 +24,7 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		user.decode(authCookie.Value)
 
 		data["UserData"] = user
+		data["Socket"] = Conf().Socket
 		// data.user = user
 	}
 

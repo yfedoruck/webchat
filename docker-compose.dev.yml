@@ -3,5 +3,6 @@ services:
   webchat:
     environment:
       - DEBUG=True
+      - USERDOMAIN=home
     ports:
       - "8080:5000"

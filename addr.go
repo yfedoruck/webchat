@@ -31,23 +31,31 @@ func basePath() string {
 	return baseDir
 }
 
-var addr addrConf
-
-type addrConf struct {
-	Host string `json:"Host"`
+type AddrConf struct {
+	Host     string `json:"Host"`
+	Socket   string `json:"socket"`
 }
 
-func host() string {
-	if addr.Host != "" {
-		return addr.Host
+var addr *AddrConf
+
+func Conf() *AddrConf {
+	if addr != nil {
+		return addr
 	}
-	file, err := os.Open(basePath() + filepath.FromSlash("/config/addr.json"))
+	file, err := os.Open(basePath() + filepath.FromSlash("/config/"+Domain()+"/addr.json"))
 	check(err)
 
-	a := addrConf{}
-	err = json.NewDecoder(file).Decode(&a)
+	addr = &AddrConf{}
+	err = json.NewDecoder(file).Decode(addr)
 	check(err)
 
-	addr.Host = a.Host
-	return addr.Host
+	return addr
+}
+
+func Domain() string {
+	domain := os.Getenv("USERDOMAIN")
+	if domain == "home" {
+		return "local"
+	}
+	return "heroku"
 }
