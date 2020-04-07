@@ -13,8 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
-config/*
-!config/.gitkeep
+/tmp/
+/config/facebook.json
+/config/github.json
+/config/google.json
 
 server.rsa.crt
 server.rsa.key

@@ -1,0 +1,4 @@
+{
+  "Host": "http://localhost.com:8080",
+  "socket": "ws"
+}
