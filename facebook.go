@@ -23,8 +23,8 @@ var (
 )
 
 func init() {
-	c := config{}
-	c.set("facebook")
+	c := web.Config{}
+	c.Set("facebook")
 	fbConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,

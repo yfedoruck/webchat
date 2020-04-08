@@ -20,8 +20,8 @@ var (
 )
 
 func init() {
-	c := config{}
-	c.set("github")
+	c := web.Config{}
+	c.Set("github")
 	oauthConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,

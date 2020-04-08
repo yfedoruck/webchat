@@ -19,8 +19,8 @@ var (
 )
 
 func init() {
-	c := config{}
-	c.set("google")
+	c := web.Config{}
+	c.Set("google")
 	googleConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
