@@ -2,7 +2,7 @@ package chat
 
 import (
 	"github.com/gorilla/websocket"
-	"github.com/yfedoruck/webchat/pkg/web"
+	"github.com/yfedoruck/webchat/pkg/browser"
 	"log"
 	"net/http"
 )
@@ -17,14 +17,14 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: socketBufferSize,
 }
 
-type room struct {
+type Room struct {
 	forward chan *message
 	join    chan *client
 	leave   chan *client
 	clients map[*client]bool
 }
 
-func (r *room) Run() {
+func (r *Room) Run() {
 	for {
 		select {
 		case client := <-r.join:
@@ -40,7 +40,7 @@ func (r *room) Run() {
 	}
 }
 
-func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (r *Room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
 	if err != nil {
 		log.Fatal("ServeHTTP:", err)
@@ -53,7 +53,7 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user := web.Cookie{}
+	user := browser.Cookie{}
 	user.Decode(authCookie.Value)
 
 	m := make(map[string]interface{})
@@ -74,8 +74,8 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	client.read()
 }
 
-func NewRoom() *room {
-	return &room{
+func NewRoom() *Room {
+	return &Room{
 		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),

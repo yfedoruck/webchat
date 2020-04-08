@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yfedoruck/webchat/pkg/browser"
 	"github.com/yfedoruck/webchat/pkg/env"
 	"io/ioutil"
 	"log"
@@ -94,7 +95,7 @@ func HandleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 	fbUser := fbUser{}
 	_ = json.Unmarshal(response, &fbUser)
 
-	Cookie{
+	browser.Cookie{
 		Name:      fbUser.Name,
 		AvatarURL: fbUser.Picture.Data.Url,
 	}.Set(w)

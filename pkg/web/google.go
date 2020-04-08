@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yfedoruck/webchat/pkg/browser"
 	"github.com/yfedoruck/webchat/pkg/env"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -55,7 +56,7 @@ func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	googleUser := googleUser{}
 	_ = json.Unmarshal(content, &googleUser)
 
-	Cookie{
+	browser.Cookie{
 		Name:      googleUser.Name,
 		AvatarURL: googleUser.Picture,
 	}.Set(w)

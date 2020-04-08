@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/yfedoruck/webchat/pkg/browser"
 	"github.com/yfedoruck/webchat/pkg/env"
 	"github.com/yfedoruck/webchat/pkg/fail"
 	"html/template"
@@ -21,7 +22,7 @@ func (t *TemplateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 	data := map[string]interface{}{"Host": r.Host}
 	if authCookie, err := r.Cookie("auth"); err == nil {
-		user := Cookie{}
+		user := browser.Cookie{}
 		user.Decode(authCookie.Value)
 
 		data["UserData"] = user

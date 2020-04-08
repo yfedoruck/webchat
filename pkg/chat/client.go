@@ -8,7 +8,7 @@ import (
 type client struct {
 	socket   *websocket.Conn
 	send     chan *message
-	room     *room
+	room     *Room
 	userData map[string]interface{}
 }
 

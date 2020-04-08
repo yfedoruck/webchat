@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"github.com/yfedoruck/webchat/pkg/browser"
 	"github.com/yfedoruck/webchat/pkg/env"
 	"net/http"
 
@@ -63,7 +64,7 @@ func HandleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	// http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	//
-	Cookie{
+	browser.Cookie{
 		Name:      *user.Login,
 		AvatarURL: *user.AvatarURL,
 	}.Set(w)
