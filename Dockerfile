@@ -13,7 +13,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/webchat github.com/yfedoruck/webchat
+RUN CGO_ENABLED=0 GOOS=linux go build -o /bin/webchat github.com/yfedoruck/webchat/cmd/chat
 
 FROM alpine:3.11
 RUN apk add --no-cache ca-certificates

@@ -10,12 +10,12 @@ type App struct {
 	room   *chat.Room
 }
 
-func (a App) Init() {
+func (a *App) Init() {
 	a.room = chat.NewRoom()
 	a.server = web.NewServer(a.room)
 }
 
-func (a App) Run() {
+func (a *App) Run() {
 	go a.room.Run()
 	a.server.Start()
 }
