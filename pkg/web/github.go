@@ -1,9 +1,8 @@
-package main
+package web
 
 import (
 	"fmt"
 	"github.com/yfedoruck/webchat/pkg/env"
-	"github.com/yfedoruck/webchat/pkg/web"
 	"net/http"
 
 	"github.com/google/go-github/github"
@@ -11,7 +10,7 @@ import (
 	githuboauth "golang.org/x/oauth2/github"
 )
 
-const githubCallback string = "/oauth2github"
+const GithubCallback string = "/oauth2github"
 
 var (
 	oauthConf *oauth2.Config
@@ -20,12 +19,12 @@ var (
 )
 
 func init() {
-	c := web.Config{}
+	c := Config{}
 	c.Set("github")
 	oauthConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  env.Conf().Host + githubCallback,
+		RedirectURL:  env.Conf().Host + GithubCallback,
 		Scopes:       []string{"user:username,avatar_url"},
 		Endpoint:     githuboauth.Endpoint,
 	}
@@ -33,12 +32,12 @@ func init() {
 	fmt.Println(oauthConf)
 }
 
-func handleGitHubLogin(w http.ResponseWriter, r *http.Request) {
+func HandleGitHubLogin(w http.ResponseWriter, r *http.Request) {
 	url := oauthConf.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
+func HandleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
 	if state != oauthStateString {
 		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", oauthStateString, state)
@@ -64,7 +63,7 @@ func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	// http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	//
-	web.Cookie{
+	Cookie{
 		Name:      *user.Login,
 		AvatarURL: *user.AvatarURL,
 	}.Set(w)

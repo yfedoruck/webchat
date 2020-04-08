@@ -1,10 +1,9 @@
-package main
+package web
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/yfedoruck/webchat/pkg/env"
-	"github.com/yfedoruck/webchat/pkg/web"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,7 +14,7 @@ import (
 	"golang.org/x/oauth2/facebook"
 )
 
-const fbCallback string = "/oauth2callback"
+const FbCallback string = "/oauth2callback"
 
 var (
 	fbConf  *oauth2.Config
@@ -23,12 +22,12 @@ var (
 )
 
 func init() {
-	c := web.Config{}
+	c := Config{}
 	c.Set("facebook")
 	fbConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  env.Conf().Host + fbCallback,
+		RedirectURL:  env.Conf().Host + FbCallback,
 		Scopes:       []string{"public_profile"},
 		Endpoint:     facebook.Endpoint,
 	}
@@ -44,7 +43,7 @@ type fbUser struct {
 	} `json:"picture"`
 }
 
-func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {
+func HandleFacebookLogin(w http.ResponseWriter, r *http.Request) {
 	Url, err := url.Parse(fbConf.Endpoint.AuthURL)
 	if err != nil {
 		log.Fatal("Parse: ", err)
@@ -60,7 +59,7 @@ func handleFacebookLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authUrl, http.StatusTemporaryRedirect)
 }
 
-func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
+func HandleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 	state := r.FormValue("state")
 	if state != fbState {
 		fmt.Printf("invalid oauth state, expected '%s', got '%s'\n", fbState, state)
@@ -95,7 +94,7 @@ func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 	fbUser := fbUser{}
 	_ = json.Unmarshal(response, &fbUser)
 
-	web.Cookie{
+	Cookie{
 		Name:      fbUser.Name,
 		AvatarURL: fbUser.Picture.Data.Url,
 	}.Set(w)

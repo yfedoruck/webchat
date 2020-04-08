@@ -1,17 +1,16 @@
-package main
+package web
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/yfedoruck/webchat/pkg/env"
-	"github.com/yfedoruck/webchat/pkg/web"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"io/ioutil"
 	"net/http"
 )
 
-const googleCallback string = "/callback"
+const GoogleCallback string = "/callback"
 
 var (
 	googleConf  *oauth2.Config
@@ -19,12 +18,12 @@ var (
 )
 
 func init() {
-	c := web.Config{}
+	c := Config{}
 	c.Set("google")
 	googleConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  env.Conf().Host + googleCallback,
+		RedirectURL:  env.Conf().Host + GoogleCallback,
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.profile"},
 		Endpoint:     google.Endpoint,
 	}
@@ -39,12 +38,12 @@ type googleUser struct {
 	Locale     string `json:"locale"`
 }
 
-func handleGoogleLogin(w http.ResponseWriter, r *http.Request) {
+func HandleGoogleLogin(w http.ResponseWriter, r *http.Request) {
 	url := googleConf.AuthCodeURL(googleState)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
+func HandleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	content, err := getUserInfo(r.FormValue("state"), r.FormValue("code"))
 	if err != nil {
 		fmt.Println(err.Error())
@@ -56,7 +55,7 @@ func handleGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	googleUser := googleUser{}
 	_ = json.Unmarshal(content, &googleUser)
 
-	web.Cookie{
+	Cookie{
 		Name:      googleUser.Name,
 		AvatarURL: googleUser.Picture,
 	}.Set(w)
