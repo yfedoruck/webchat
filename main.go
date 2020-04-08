@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/yfedoruck/webchat/pkg/env"
 	"github.com/yfedoruck/webchat/pkg/fail"
+	"github.com/yfedoruck/webchat/pkg/web"
 	"html/template"
 	"log"
 	"net/http"
@@ -22,8 +23,8 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 	data := map[string]interface{}{"Host": r.Host}
 	if authCookie, err := r.Cookie("auth"); err == nil {
-		user := cookie{}
-		user.decode(authCookie.Value)
+		user := web.Cookie{}
+		user.Decode(authCookie.Value)
 
 		data["UserData"] = user
 		data["Socket"] = env.Conf().Socket
@@ -36,7 +37,7 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func logout() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		removeCookie(w)
+		web.RemoveCookie(w)
 		w.Header().Set("Location", "/signin")
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})

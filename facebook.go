@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/yfedoruck/webchat/pkg/env"
+	"github.com/yfedoruck/webchat/pkg/web"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -94,10 +95,10 @@ func handleFacebookCallback(w http.ResponseWriter, r *http.Request) {
 	fbUser := fbUser{}
 	_ = json.Unmarshal(response, &fbUser)
 
-	cookie{
-		fbUser.Name,
-		fbUser.Picture.Data.Url,
-	}.set(w)
+	web.Cookie{
+		Name:      fbUser.Name,
+		AvatarURL: fbUser.Picture.Data.Url,
+	}.Set(w)
 
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusTemporaryRedirect)

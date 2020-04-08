@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
+	"github.com/yfedoruck/webchat/pkg/web"
 	"log"
 	"net/http"
 )
@@ -52,8 +53,8 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	user := cookie{}
-	user.decode(authCookie.Value)
+	user := web.Cookie{}
+	user.Decode(authCookie.Value)
 
 	m := make(map[string]interface{})
 	m["name"] = user.Name

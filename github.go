@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/yfedoruck/webchat/pkg/env"
+	"github.com/yfedoruck/webchat/pkg/web"
 	"net/http"
 
 	"github.com/google/go-github/github"
@@ -63,10 +64,10 @@ func handleGitHubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	// http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	//
-	cookie{
-		*user.Login,
-		*user.AvatarURL,
-	}.set(w)
+	web.Cookie{
+		Name:      *user.Login,
+		AvatarURL: *user.AvatarURL,
+	}.Set(w)
 
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusTemporaryRedirect)

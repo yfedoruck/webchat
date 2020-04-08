@@ -1,4 +1,4 @@
-package main
+package web
 
 import (
 	"encoding/base64"
@@ -7,19 +7,19 @@ import (
 	"net/http"
 )
 
-type cookie struct {
+type Cookie struct {
 	Name      string
 	AvatarURL string
 }
 
-func (c cookie) encode() string {
+func (c Cookie) encode() string {
 	js, err := json.Marshal(c)
 	fail.Check(err)
 
 	return base64.StdEncoding.EncodeToString(js)
 }
 
-func (c *cookie) decode(arg string) {
+func (c *Cookie) Decode(arg string) {
 	js, err := base64.StdEncoding.DecodeString(arg)
 	fail.Check(err)
 
@@ -27,7 +27,7 @@ func (c *cookie) decode(arg string) {
 	fail.Check(err)
 }
 
-func (c cookie) set(w http.ResponseWriter) {
+func (c Cookie) Set(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
 		Name:  "auth",
 		Value: c.encode(),
@@ -35,7 +35,7 @@ func (c cookie) set(w http.ResponseWriter) {
 	})
 }
 
-func removeCookie(w http.ResponseWriter) {
+func RemoveCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
 		Name:   "auth",
 		Value:  "",
