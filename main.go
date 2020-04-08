@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/yfedoruck/webchat/pkg/chat"
 	"github.com/yfedoruck/webchat/pkg/env"
 	"github.com/yfedoruck/webchat/pkg/fail"
 	"github.com/yfedoruck/webchat/pkg/web"
@@ -48,11 +49,11 @@ func main() {
 	// defer f.Close()
 	// log.SetOutput(f)
 
-	r := newRoom()
-	go r.run()
+	room := chat.NewRoom()
+	go room.Run()
 
 	http.Handle("/", web.MustAuth(&templateHandler{filename: "chat.html"}))
-	http.Handle("/room", r)
+	http.Handle("/room", room)
 
 	http.Handle("/signin", &templateHandler{filename: "login.html"})
 

@@ -1,4 +1,4 @@
-package main
+package chat
 
 import (
 	"github.com/gorilla/websocket"
@@ -24,7 +24,7 @@ type room struct {
 	clients map[*client]bool
 }
 
-func (r *room) run() {
+func (r *room) Run() {
 	for {
 		select {
 		case client := <-r.join:
@@ -74,7 +74,7 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	client.read()
 }
 
-func newRoom() *room {
+func NewRoom() *room {
 	return &room{
 		forward: make(chan *message),
 		join:    make(chan *client),
