@@ -51,7 +51,7 @@ func main() {
 	r := newRoom()
 	go r.run()
 
-	http.Handle("/", MustAuth(&templateHandler{filename: "chat.html"}))
+	http.Handle("/", web.MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
 
 	http.Handle("/signin", &templateHandler{filename: "login.html"})
