@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/yfedoruck/webchat/pkg/fail"
 	"net/http"
 )
 
@@ -13,17 +14,17 @@ type cookie struct {
 
 func (c cookie) encode() string {
 	js, err := json.Marshal(c)
-	check(err)
+	fail.Check(err)
 
 	return base64.StdEncoding.EncodeToString(js)
 }
 
 func (c *cookie) decode(arg string) {
 	js, err := base64.StdEncoding.DecodeString(arg)
-	check(err)
+	fail.Check(err)
 
 	err = json.Unmarshal(js, &c)
-	check(err)
+	fail.Check(err)
 }
 
 func (c cookie) set(w http.ResponseWriter) {

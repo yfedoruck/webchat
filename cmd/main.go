@@ -1,5 +1,7 @@
 package main
 
 func main() {
-	$END$
+	app := App{}
+	app.Init()
+	app.Run()
 }

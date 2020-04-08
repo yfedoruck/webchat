@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/yfedoruck/webchat/pkg/env"
 	"net/http"
 
 	"github.com/google/go-github/github"
@@ -23,7 +24,7 @@ func init() {
 	oauthConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  Conf().Host + githubCallback,
+		RedirectURL:  env.Conf().Host + githubCallback,
 		Scopes:       []string{"user:username,avatar_url"},
 		Endpoint:     githuboauth.Endpoint,
 	}

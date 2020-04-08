@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/yfedoruck/webchat/pkg/env"
+	"github.com/yfedoruck/webchat/pkg/fail"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,7 +18,7 @@ type templateHandler struct {
 
 func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
-		t.templ = template.Must(template.ParseFiles(filepath.Join(basePath()+"/templates", t.filename)))
+		t.templ = template.Must(template.ParseFiles(filepath.Join(env.AppPath()+"/templates", t.filename)))
 	})
 	data := map[string]interface{}{"Host": r.Host}
 	if authCookie, err := r.Cookie("auth"); err == nil {
@@ -24,12 +26,12 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		user.decode(authCookie.Value)
 
 		data["UserData"] = user
-		data["Socket"] = Conf().Socket
+		data["Socket"] = env.Conf().Socket
 		// data.user = user
 	}
 
 	err := t.templ.Execute(w, data)
-	check(err)
+	fail.Check(err)
 }
 
 func logout() http.Handler {
@@ -68,10 +70,8 @@ func main() {
 	http.Handle("/logout", logout())
 
 	// start the web server
-	port := port()
-	log.Println("Starting web server on", port)
-	if err := http.ListenAndServe(":" + port, nil); err != nil {
-		// if err := http.ListenAndServeTLS(host(), filepath.Join(basePath()+"/server.rsa.crt"), filepath.Join(basePath()+"/server.rsa.key"), nil); err != nil {
+	log.Println("Starting web server on", env.Port())
+	if err := http.ListenAndServe(":"+env.Port(), nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
 }

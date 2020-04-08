@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/yfedoruck/webchat/pkg/env"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -26,7 +27,7 @@ func init() {
 	fbConf = &oauth2.Config{
 		ClientID:     c.ClientID,
 		ClientSecret: c.ClientSecret,
-		RedirectURL:  Conf().Host + fbCallback,
+		RedirectURL:  env.Conf().Host + fbCallback,
 		Scopes:       []string{"public_profile"},
 		Endpoint:     facebook.Endpoint,
 	}

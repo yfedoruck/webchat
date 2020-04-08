@@ -2,6 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/yfedoruck/webchat/pkg/env"
+	"github.com/yfedoruck/webchat/pkg/fail"
 	"os"
 	"path/filepath"
 )
@@ -12,9 +14,9 @@ type config struct {
 }
 
 func (c *config) set(service string) {
-	file, err := os.Open(basePath() + filepath.FromSlash("/config/"+service+".json"))
-	check(err)
+	file, err := os.Open(env.AppPath() + filepath.FromSlash("/config/"+service+".json"))
+	fail.Check(err)
 
 	err = json.NewDecoder(file).Decode(c)
-	check(err)
+	fail.Check(err)
 }
