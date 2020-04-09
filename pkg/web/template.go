@@ -18,7 +18,7 @@ type TemplateHandler struct {
 
 func (t *TemplateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
-		t.templ = template.Must(template.ParseFiles(filepath.Join(env.AppPath()+"/templates", t.Filename)))
+		t.templ = template.Must(template.ParseFiles(filepath.Join(env.AppPath()+"/template", t.Filename)))
 	})
 	data := map[string]interface{}{"Host": r.Host}
 	if authCookie, err := r.Cookie("auth"); err == nil {
