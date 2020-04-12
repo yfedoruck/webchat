@@ -1,8 +1,13 @@
 version: "3"
 services:
   webchat:
+    build:
+      dockerfile: ./Dockerfile.dev
     environment:
       - DEBUG=True
       - USERDOMAIN=home
+    container_name: webserver
     ports:
       - "8080:5000"
+    volumes:
+      - .:/go/src/webchat

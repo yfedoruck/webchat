@@ -1,0 +1,19 @@
+FROM golang:alpine
+
+WORKDIR /go/src/webchat
+RUN apk add --no-cache curl \
+    bash \
+    git
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy the source files to the container's workspace.
+COPY . .
+
+RUN go install github.com/yfedoruck/webchat/cmd/chat
+
+ENTRYPOINT /go/bin/chat
+
+# Document that the service listens on port 8080.
+EXPOSE 8080

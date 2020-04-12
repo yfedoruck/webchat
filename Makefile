@@ -5,8 +5,8 @@ dev:
 			-f docker-compose.dev.yml \
 			up -d --remove-orphans --build \
 			&& docker-compose logs
-build:
-	docker exec webchat_webchat_1 go build -o /go/bin/webchat github.com/yfedoruck/webchat && \
+hot:
+	docker exec webserver go install github.com/yfedoruck/webchat/cmd/chat && \
 	docker-compose restart webchat
 
 web:
@@ -14,7 +14,7 @@ web:
 		docker-compose \
 			-f docker-compose.yml \
 			-f docker-compose.dev.yml \
-			build server && \
+			build webchat && \
 		docker start webserver
 
 deb:
